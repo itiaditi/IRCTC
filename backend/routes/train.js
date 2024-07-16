@@ -7,13 +7,13 @@ const trainRouter = express.Router();
 
 // Add a new train (admin only)
 // authenticateToken,checkRole(["admin"]),
-trainRouter.post('/train', async (req, res) => {
-    const { train_name, source_station_id, destination_station_id, total_seats } = req.body;
+trainRouter.post('/train', authenticateToken, checkRole(["admin"]), async (req, res) => {
+    const { train_name, source_station_name, destination_station_name, total_seats } = req.body;
   
     try {
-      // Check if source and destination stations exist
-      const sourceStation = await Station.findByPk(source_station_id);
-      const destinationStation = await Station.findByPk(destination_station_id);
+      // Check if source and destination stations exist by their names
+      const sourceStation = await Station.findOne({ where: { station_name: source_station_name } });
+      const destinationStation = await Station.findOne({ where: { station_name: destination_station_name } });
   
       if (!sourceStation || !destinationStation) {
         return res.status(404).json({ error: 'Source or destination station not found' });
@@ -22,15 +22,15 @@ trainRouter.post('/train', async (req, res) => {
       // Create new train
       const newTrain = await Train.create({
         train_name,
-        source_station_id,
-        destination_station_id,
+        source_station_id: sourceStation.id,
+        destination_station_id: destinationStation.id,
         total_seats
       });
   
       // Create seats for the new train
       const seats = [];
       for (let i = 1; i <= total_seats; i++) {
-        seats.push({ train_id: newTrain.train_id, seat_number: i, is_available: true });
+        seats.push({ train_id: newTrain.id, seat_number: i, is_available: true });
       }
   
       await Seat.bulkCreate(seats);

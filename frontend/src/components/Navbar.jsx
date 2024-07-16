@@ -52,6 +52,22 @@ const Navbar = () => {
                 >
                   Booking
                 </Link>
+                <Link to="/booking-details"
+                  className="font-medium text-white hover:text-gray-900"
+                >
+                  Booking Details
+                </Link>
+                {/* admin nav */}
+                <Link to="/add-train"
+                  className="font-medium text-white hover:text-gray-900"
+                >
+                  Add Train
+                </Link>
+                <Link to="/add-station"
+                  className="font-medium text-white hover:text-gray-900"
+                >
+                 Add Station
+                </Link>
               </nav>
               <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
                 <Link to="/login"

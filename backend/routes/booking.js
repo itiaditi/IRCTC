@@ -7,8 +7,9 @@ const bookingRouter = express.Router();
 
 // Book a seat (for all users)
 // ,authenticateToken,checkRole(["user"])
-bookingRouter.post('/book', async (req, res) => {
+bookingRouter.post('/book', authenticateToken, checkRole(["user"]), async (req, res) => {
   const { train_name, number_of_seats } = req.body;
+  const userId = req.user.id; // Assuming user ID is available in req.user after authentication
 
   try {
     // Find the train by train_name
@@ -31,6 +32,7 @@ bookingRouter.post('/book', async (req, res) => {
     for (let i = 0; i < number_of_seats; i++) {
       const booking = await Booking.create({
         train_id: train.train_id,
+        user_id: userId, // Save user ID with the booking
         seat_id: null, // If you don't have specific seat IDs to assign
         booking_status: 'confirmed'
       });
@@ -51,40 +53,42 @@ bookingRouter.post('/book', async (req, res) => {
   }
 });
 
+
 // Get booking details by booking ID
-// ,authenticateToken,checkRole(["user"]),
-bookingRouter.get('/:bookingId', async (req, res) => {
-    const { bookingId } = req.params;
-  
-    try {
-      // Fetch booking details including related train and seat information
-      const booking = await Booking.findOne({
-        where: { booking_id: bookingId },
-        include: [
-          {
-            model: Train,
-            attributes: ['train_id', 'train_name'],
-          },
-          {
-            model: Seat,
-            attributes: ['seat_id', 'seat_number'],
-          },
-          {
-            model: User, // Include User model if user ID is associated with bookings
-            attributes: ['id', 'name', 'email'],
-          },
-        ],
-      });
-  
-      if (!booking) {
-        return res.status(404).json({ error: 'Booking not found' });
-      }
-  
-      res.status(200).json({ booking });
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ error: 'Server error' });
+
+bookingRouter.get('/:bookingId', authenticateToken, checkRole(["user"]), async (req, res) => {
+  const { bookingId } = req.params;
+  const userId = req.user.id; // Retrieve user ID from authenticated request
+
+  try {
+    // Fetch booking details including related train and user information
+    const booking = await Booking.findOne({
+      where: { 
+        booking_id: bookingId,
+        user_id: userId // Ensure only bookings for the logged-in user are fetched
+      },
+      include: [
+        {
+          model: Train,
+          attributes: ['train_id', 'train_name'],
+        },
+        {
+          model: User, // Include User model to fetch user details (optional if you want to verify)
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+    });
+
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' });
     }
-  });
+
+    res.status(200).json({ booking });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 module.exports = bookingRouter;
