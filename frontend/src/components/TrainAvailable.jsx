@@ -9,7 +9,7 @@ const CheckTrainAvailability = () => {
   const handleCheckAvailability = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/train?source_station_name=${fromStation}&destination_station_name=${toStation}`
+        `https://irctc-lc7w.onrender.com/train?source_station_name=${fromStation}&destination_station_name=${toStation}`
       );
       const data = await response.json();
 

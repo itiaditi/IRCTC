@@ -8,7 +8,7 @@ const BookTrain = () => {
 
   const handleBookTrain = async () => {
     try {
-      const response = await fetch('http://localhost:8080/book', {
+      const response = await fetch('https://irctc-lc7w.onrender.com/book', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

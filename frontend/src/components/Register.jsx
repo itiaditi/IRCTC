@@ -22,7 +22,7 @@ const Register = () => {
     const { name, email, password } = formData;
 
     try {
-      const response = await axios.post('http://localhost:8080/register', {
+      const response = await axios.post('https://irctc-lc7w.onrender.com/register', {
         name,
         email,
         password

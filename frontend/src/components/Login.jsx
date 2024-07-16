@@ -21,7 +21,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:8080/login', formData);
+      const response = await axios.post('https://irctc-lc7w.onrender.com/login', formData);
 
       if (response.status === 200) {
         alert('Login successful');
