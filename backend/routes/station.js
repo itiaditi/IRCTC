@@ -6,7 +6,8 @@ const { checkRole } = require('../middlewares/access');
 const stationRouter = express.Router();
 
 // Add a new station (admin only)
-stationRouter.post('/addstation',authenticateToken,checkRole(["admin"]), async (req, res) => {
+// authenticateToken,checkRole(["user"]),
+stationRouter.post('/addstation', async (req, res) => {
   const { station_name } = req.body;
 
   try {

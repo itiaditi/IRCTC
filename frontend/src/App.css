@@ -2,3 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* styles.css */
+@keyframes colorChange {
+    0% { color: rgb(255, 255, 255); } /* white */
+    25% { color: rgb(255, 223, 70); } /* light yellow */
+    50% { color: rgb(137, 207, 240); } /* light blue */
+    75% { color: rgb(173, 216, 230); } /* light cyan */
+    100% { color: rgb(240, 248, 255); } /* azure */
+  }
+  
+  
+  .color-changing {
+    animation: colorChange 5s infinite;
+  }
+  

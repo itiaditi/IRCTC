@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
-    name:'',
     email: '',
     password: '',
   });
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -19,52 +18,33 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, password } = formData;
+    setError('');
 
     try {
-      const response = await axios.post('http://localhost:8080/register', {
-        name,
-        email,
-        password
-      });
+      const response = await axios.post('http://localhost:8080/login', formData);
 
-      if (response) {
-        navigate('/login')
+      if (response.status === 200) {
+        alert('Login successful');
+        // Store the token and user details in localStorage
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.payload));
+        // Redirect to another page if needed
       }
     } catch (error) {
-      console.error('There was an error registering the user!', error);
-      alert('Error registering user. Please try again.');
+      console.error('There was an error logging in!', error);
+      setError('Error logging in. Please check your credentials and try again.');
     }
   };
 
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
       <div className="container mx-auto py-8">
-        <div id="register" className="w-5/6 lg:w-1/2 mx-auto  rounded-md shadow-2xl">
+        <div id="register" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
           <div className="py-4 px-8 text-white text-xl border-b border-grey-lighter">
-            Register for a free account
+            Login
           </div>
           <div className="py-4 px-8">
             <form onSubmit={handleSubmit}>
-              <div className="flex mb-4">
-                <div className="w-full mr-1">
-                  <label
-                    className="block text-white text-sm font-bold mb-2"
-                    htmlFor="name"
-                  >
-                    Name
-                  </label>
-                  <input
-                    className="appearance-none border rounded w-full py-2 px-3 text-grey-darker"
-                    id="name"
-                    type="text"
-                    placeholder="Your first name"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </div>
-               
-              </div>
               <div className="mb-4">
                 <label
                   className="block text-white text-sm font-bold mb-2"
@@ -89,7 +69,7 @@ const Register = () => {
                   Password
                 </label>
                 <input
-                  className=" border rounded w-full py-2 px-3 text-grey-darker"
+                  className="border rounded w-full py-2 px-3 text-grey-darker"
                   id="password"
                   type="password"
                   placeholder="Your secure password"
@@ -98,19 +78,20 @@ const Register = () => {
                 />
                 <p className="text-grey text-xs mt-1">At least 6 characters</p>
               </div>
+              {error && <p className="text-red-500">{error}</p>}
               <div className="flex items-center justify-between mt-8">
                 <button
                   className="bg-white shadow-2xl hover:bg-blue-dark text-[#694585] font-bold py-2 px-4 rounded-full"
                   type="submit"
                 >
-                  Sign Up
+                  Login
                 </button>
                 <p className="text-center my-4">
                   <a
                     href="#"
                     className="text-white text-sm no-underline hover:text-grey-darker"
                   >
-                    I already have an account
+                    Don't have an account
                   </a>
                 </p>
               </div>
@@ -122,4 +103,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

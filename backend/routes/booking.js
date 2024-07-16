@@ -1,9 +1,12 @@
 const express = require('express');
 const { Train, Seat, Booking, User } = require('../models');
+const { authenticateToken } = require('../middlewares/auth');
+const { checkRole } = require('../middlewares/access');
 
 const bookingRouter = express.Router();
 
 // Book a seat (for all users)
+// ,authenticateToken,checkRole(["user"])
 bookingRouter.post('/book', async (req, res) => {
   const { train_id, seat_id } = req.body;
 
@@ -44,8 +47,8 @@ bookingRouter.post('/book', async (req, res) => {
   }
 });
 
-
 // Get booking details by booking ID
+// ,authenticateToken,checkRole(["user"]),
 bookingRouter.get('/:bookingId', async (req, res) => {
     const { bookingId } = req.params;
   

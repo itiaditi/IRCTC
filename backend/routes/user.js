@@ -53,11 +53,11 @@ userRouter.post('/login', async (req, res) => {
   
       // Generate a token
       const payload = {
-        user: {
+        
           id: user.id,
           email: user.email,
           role: user.role
-        }
+        
       };
   
       jwt.sign(payload, 'masai', { expiresIn: '1h' }, (error, token) => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const sequelize = require('./config/database');
 const router = require('./routes/user');
+const cors=require("cors");
 const userRouter = require('./routes/user');
 const trainRouter = require('./routes/train');
 const bookingRouter = require('./routes/booking');
@@ -11,6 +12,7 @@ const stationRouter = require('./routes/station');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 // const server = http.createServer(app);
 // const io = new Server(server);
 const PORT = process.env.PORT || 5000;
