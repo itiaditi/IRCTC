@@ -6,6 +6,7 @@ import Login from '../components/Login';
 import Register from '../components/Register';
 import Home from '../components/Home';
 import CheckTrainAvailability from '../components/TrainAvailable';
+import BookTrain from '../components/Booking';
 const AllRoutes = () => {
   return (
     <div>
@@ -14,6 +15,7 @@ const AllRoutes = () => {
       <Route path="/login" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
       <Route path="/train" element={<CheckTrainAvailability/>}/>
+      <Route path="/booking" element={<BookTrain/>}/>
      </Routes>
     </div>
   )

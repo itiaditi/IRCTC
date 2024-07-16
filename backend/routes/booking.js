@@ -8,39 +8,43 @@ const bookingRouter = express.Router();
 // Book a seat (for all users)
 // ,authenticateToken,checkRole(["user"])
 bookingRouter.post('/book', async (req, res) => {
-  const { train_id, seat_id } = req.body;
+  const { train_name, number_of_seats } = req.body;
 
   try {
-    // Check if the seat is available
-    const seat = await Seat.findOne({
+    // Find the train by train_name
+    const train = await Train.findOne({
       where: {
-        seat_id,
-        train_id,
-        is_available: true
+        train_name
       }
     });
 
-    if (!seat) {
-      return res.status(404).json({ error: 'Seat not available for booking' });
+    if (!train) {
+      return res.status(404).json({ error: 'Train not found' });
     }
 
-    // Create a new booking
-    const booking = await Booking.create({
-      train_id,
-      seat_id,
-      booking_status: 'confirmed'
-    });
+    if (train.total_seats < number_of_seats) {
+      return res.status(400).json({ error: 'Not enough seats available on this train' });
+    }
 
-    // Update seat availability
-    await Seat.update({ is_available: false }, {
+    // Create new bookings for the requested number of seats
+    const bookings = [];
+    for (let i = 0; i < number_of_seats; i++) {
+      const booking = await Booking.create({
+        train_id: train.train_id,
+        seat_id: null, // If you don't have specific seat IDs to assign
+        booking_status: 'confirmed'
+      });
+      bookings.push(booking);
+    }
+
+    // Update total_seats in Train table
+    await Train.update({ total_seats: train.total_seats - number_of_seats }, {
       where: {
-        seat_id,
-        train_id,
-        is_available: true
+        train_id: train.train_id
       }
     });
 
-    res.status(201).json({ message: 'Seat booked successfully', booking });
+    res.status(201).json({ message: 'Seats booked successfully', bookings });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: 'Server error' });
