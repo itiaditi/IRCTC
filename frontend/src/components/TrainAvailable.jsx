@@ -17,7 +17,7 @@ const CheckTrainAvailability = () => {
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const response = await fetch('http://localhost:8080/');
+        const response = await fetch('https://irctc-lc7w.onrender.com/');
         const data = await response.json();
 
         if (response.ok) {
@@ -53,7 +53,7 @@ const CheckTrainAvailability = () => {
 
   const handleBookTrain = async () => {
     try {
-      const response = await fetch('http://localhost:8080/book', {
+      const response = await fetch('https://irctc-lc7w.onrender.com/book', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
