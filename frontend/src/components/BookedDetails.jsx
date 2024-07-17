@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { saveAs } from 'file-saver';
 
 const BookedDetails = () => {
   const [bookingId, setBookingId] = useState(''); // Assume booking ID is known or passed as a prop
@@ -29,6 +30,19 @@ const BookedDetails = () => {
     }
   }, [bookingId]);
 
+  const handleDownload = () => {
+    if (booking) {
+      const bookingDetails = `
+        Booking ID: ${booking.booking_id}
+        Train Name: ${booking.Train.train_name}
+        User: ${booking.User.name} (${booking.User.email})
+        Booking Status: ${booking.booking_status}
+      `;
+      const blob = new Blob([bookingDetails], { type: 'text/plain;charset=utf-8' });
+      saveAs(blob, `booking_${booking.booking_id}.txt`);
+    }
+  };
+
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
       <div className="container mx-auto py-8">
@@ -55,6 +69,12 @@ const BookedDetails = () => {
                     Booking Status: {booking.booking_status}
                   </li>
                 </ul>
+                <button
+                  className="mt-4 bg-white text-[#694585] font-bold py-2 px-4 rounded-full shadow-2xl hover:bg-blue-dark"
+                  onClick={handleDownload}
+                >
+                  Download Booking Details
+                </button>
               </div>
             ) : (
               !error && <p className="text-white mt-4">Loading booking details...</p>

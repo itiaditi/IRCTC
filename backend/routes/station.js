@@ -6,7 +6,15 @@ const { checkRole } = require('../middlewares/access');
 const stationRouter = express.Router();
 
 // Add a new station (admin only)
-// authenticateToken,checkRole(["user"]),
+stationRouter.get('/', async (req, res) => {
+  try {
+    const stations = await Station.findAll();
+    res.status(200).json({ stations });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 stationRouter.post('/addstation',authenticateToken,checkRole(["admin"]), async (req, res) => {
   const { station_name } = req.body;
 
@@ -28,5 +36,6 @@ stationRouter.post('/addstation',authenticateToken,checkRole(["admin"]), async (
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 module.exports = stationRouter;

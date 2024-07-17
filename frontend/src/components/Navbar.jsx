@@ -47,11 +47,7 @@ const Navbar = () => {
                 >
                   Train Availability
                 </Link>
-                <Link to="/booking"
-                  className="font-medium text-white hover:text-gray-900"
-                >
-                  Booking
-                </Link>
+               
                 <Link to="/booking-details"
                   className="font-medium text-white hover:text-gray-900"
                 >
