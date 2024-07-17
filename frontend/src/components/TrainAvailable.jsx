@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { useAuth } from '../Auth/AuthContext';
 
 const CheckTrainAvailability = () => {
   const [fromStation, setFromStation] = useState('');
@@ -10,26 +12,20 @@ const CheckTrainAvailability = () => {
   const [trains, setTrains] = useState([]);
   const [selectedTrain, setSelectedTrain] = useState(null);
   const [trainName, setTrainName] = useState('');
-  const [numberOfSeats, setNumberOfSeats] = useState(1); // Default to booking 1 seat
-  const [error, setError] = useState('');
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingStatus, setBookingStatus] = useState('');
+  const [numberOfSeats, setNumberOfSeats] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const { isLoggedIn, token } = useAuth(); // Assume token is available in the auth context
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStations = async () => {
+      setLoading(true);
       try {
-        const response = await fetch('https://irctc-lc7w.onrender.com/');
-        const data = await response.json();
-
-        if (response.ok) {
-          setStations(data.stations);
-        } else {
-          setError(data.error);
-          toast.error(data.error);
-        }
+        const response = await axios.get('https://irctc-lc7w.onrender.com/');
+        setStations(response.data.stations);
+        setLoading(false);
       } catch (err) {
-        setError('An error occurred while fetching stations.');
+        setLoading(false);
         toast.error('An error occurred while fetching stations.');
       }
     };
@@ -38,51 +34,48 @@ const CheckTrainAvailability = () => {
   }, []);
 
   const handleCheckAvailability = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(
-        `https://irctc-lc7w.onrender.com/train?source_station_name=${fromStation}&destination_station_name=${toStation}`
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        setTrains(data.trains);
-        setError('');
-        toast.success('Trains fetched successfully.');
-      } else {
-        setError(data.error);
-        toast.error(data.error);
-      }
+      const response = await axios.get(
+        `https://irctc-lc7w.onrender.com/train`, {
+          params: {
+            source_station_name: fromStation,
+            destination_station_name: toStation
+          }
+        });
+      setTrains(response.data.trains);
+      setLoading(false);
+      toast.success('Trains fetched successfully.');
     } catch (err) {
-      setError('An error occurred while fetching train data.');
+      setLoading(false);
       toast.error('An error occurred while fetching train data.');
     }
   };
 
   const handleBookTrain = async () => {
+    if (!isLoggedIn.isAuth) {
+      toast.error('You must be logged in to book a train.');
+      navigate('/login');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await fetch('https://irctc-lc7w.onrender.com/book', {
-        method: 'POST',
+      const response = await axios.post('https://irctc-lc7w.onrender.com/book', {
+        train_name: trainName,
+        number_of_seats: numberOfSeats,
+      }, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          train_name: trainName,
-          number_of_seats: numberOfSeats,
-        }),
+          'Authorization': `Bearer ${isLoggedIn.token}`, // Include the token in the Authorization header
+        }
       });
-      const data = await response.json();
 
-      if (response.ok) {
-        setBookingStatus(data.message);
-        navigate('/booking-details');
-        setError('');
-        toast.success(data.message);
-      } else {
-        setError(data.error);
-        toast.error(data.error);
-      }
+      toast.success(response.data.message);
+      setLoading(false);
+      navigate('/booking-details');
     } catch (err) {
-      setError('An error occurred while booking the train.');
+      setLoading(false);
       toast.error('An error occurred while booking the train.');
     }
   };
@@ -137,11 +130,12 @@ const CheckTrainAvailability = () => {
                 className="bg-white shadow-2xl hover:bg-blue-dark text-[#694585] font-bold py-2 px-4 rounded-full"
                 type="button"
                 onClick={handleCheckAvailability}
+                disabled={loading}
               >
-                Check Availability
+                {loading ? 'Checking...' : 'Check Availability'}
               </button>
               <p className="text-center my-4">
-                <a href="#" className="text-white text-sm no-underline hover:text-grey-darker">
+                <a href="/" className="text-white text-sm no-underline hover:text-grey-darker">
                   Back to Home
                 </a>
               </p>
@@ -152,8 +146,10 @@ const CheckTrainAvailability = () => {
                 <ul>
                   {trains.map((train) => (
                     <li key={train.train_id} className="text-black mb-2">
-                      Train Name: {train.train_name} <br/> From: {train.sourceStation.station_name} <br/> To: {train.destinationStation.station_name} <br/> Total Seats: {train.total_seats}
-                      <br/><button
+                      Train Name: {train.train_name} <br /> From: {train.sourceStation.station_name}{' '}
+                      <br /> To: {train.destinationStation.station_name} <br /> Total Seats: {train.total_seats}
+                      <br />
+                      <button
                         className="bg-[#694585] shadow-2xl hover:bg-blue-dark text-[white] font-bold py-2 px-4 rounded-full ml-4"
                         type="button"
                         onClick={() => {
@@ -186,11 +182,11 @@ const CheckTrainAvailability = () => {
                 <button
                   className="bg-white shadow-2xl hover:bg-blue-dark text-[#694585] font-bold py-2 px-4 rounded-full mt-4"
                   type="button"
-                  onClick={() => handleBookTrain(selectedTrain)}
+                  onClick={handleBookTrain}
+                  disabled={loading}
                 >
-                  Confirm Booking
+                  {loading ? 'Booking...' : 'Confirm Booking'}
                 </button>
-                {bookingSuccess && <p className="text-green-500 mt-4">{bookingStatus}</p>}
               </div>
             )}
           </div>
