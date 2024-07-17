@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CheckTrainAvailability = () => {
   const [fromStation, setFromStation] = useState('');
@@ -24,9 +26,11 @@ const CheckTrainAvailability = () => {
           setStations(data.stations);
         } else {
           setError(data.error);
+          toast.error(data.error);
         }
       } catch (err) {
         setError('An error occurred while fetching stations.');
+        toast.error('An error occurred while fetching stations.');
       }
     };
 
@@ -43,11 +47,14 @@ const CheckTrainAvailability = () => {
       if (response.ok) {
         setTrains(data.trains);
         setError('');
+        toast.success('Trains fetched successfully.');
       } else {
         setError(data.error);
+        toast.error(data.error);
       }
     } catch (err) {
       setError('An error occurred while fetching train data.');
+      toast.error('An error occurred while fetching train data.');
     }
   };
 
@@ -69,18 +76,22 @@ const CheckTrainAvailability = () => {
         setBookingStatus(data.message);
         navigate('/booking-details');
         setError('');
+        toast.success(data.message);
       } else {
         setError(data.error);
+        toast.error(data.error);
       }
     } catch (err) {
       setError('An error occurred while booking the train.');
+      toast.error('An error occurred while booking the train.');
     }
   };
 
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
+      <ToastContainer />
       <div className="container mx-auto py-8">
-        <div id="check-train-availability" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
+        <div id="register" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
           <div className="py-4 px-8 text-white text-xl border-b border-grey-lighter">
             Check Train Availability
           </div>
@@ -135,16 +146,15 @@ const CheckTrainAvailability = () => {
                 </a>
               </p>
             </div>
-            {error && <p className="text-red-500 mt-4">{error}</p>}
             {trains.length > 0 && (
-              <div className="mt-8">
-                <h2 className="text-white text-lg mb-4">Available Trains:</h2>
+              <div className="mt-8 text-black bg-white">
+                <h2 className="text-black text-lg mb-4">Available Trains:</h2>
                 <ul>
                   {trains.map((train) => (
-                    <li key={train.train_id} className="text-white mb-2">
-                      Train Name: {train.train_name} | From: {train.sourceStation.station_name} | To: {train.destinationStation.station_name} | Total Seats: {train.total_seats}
-                      <button
-                        className="bg-white shadow-2xl hover:bg-blue-dark text-[#694585] font-bold py-2 px-4 rounded-full ml-4"
+                    <li key={train.train_id} className="text-black mb-2">
+                      Train Name: {train.train_name} <br/> From: {train.sourceStation.station_name} <br/> To: {train.destinationStation.station_name} <br/> Total Seats: {train.total_seats}
+                      <br/><button
+                        className="bg-[#694585] shadow-2xl hover:bg-blue-dark text-[white] font-bold py-2 px-4 rounded-full ml-4"
                         type="button"
                         onClick={() => {
                           setSelectedTrain(train.train_id);

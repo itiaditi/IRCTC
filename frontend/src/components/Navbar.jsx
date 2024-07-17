@@ -1,9 +1,10 @@
 import {Link} from'react-router-dom'
 import React, { useState } from 'react'
 import logo from "../assets/train-logo.png"
+import { useAuth } from '../Auth/AuthContext';
 const Navbar = () => {
     const [open, setOpen] = useState(false);
-  
+  const isAuth=useAuth();
     return (
       <>
         <div className="relative shadow-lg">

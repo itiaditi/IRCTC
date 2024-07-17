@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name:'',
+    name: '',
     email: '',
     password: '',
   });
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -28,19 +31,21 @@ const Register = () => {
         password
       });
 
-      if (response) {
-        navigate('/login')
+      if (response.status === 200) {
+        toast.success('Registration successful. You can now login!');
+        navigate('/login');
       }
     } catch (error) {
-      console.error('There was an error registering the user!', error);
-      alert('Error registering user. Please try again.');
+      console.error('Error registering user:', error);
+      toast.error('Error registering user. Please try again.');
     }
   };
 
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
+      <ToastContainer />
       <div className="container mx-auto py-8">
-        <div id="register" className="w-5/6 lg:w-1/2 mx-auto  rounded-md shadow-2xl">
+        <div id="register" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
           <div className="py-4 px-8 text-white text-xl border-b border-grey-lighter">
             Register for a free account
           </div>
@@ -63,7 +68,6 @@ const Register = () => {
                     onChange={handleChange}
                   />
                 </div>
-               
               </div>
               <div className="mb-4">
                 <label
@@ -89,7 +93,7 @@ const Register = () => {
                   Password
                 </label>
                 <input
-                  className=" border rounded w-full py-2 px-3 text-grey-darker"
+                  className="border rounded w-full py-2 px-3 text-grey-darker"
                   id="password"
                   type="password"
                   placeholder="Your secure password"

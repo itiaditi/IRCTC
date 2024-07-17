@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddTrain = () => {
   const [trainName, setTrainName] = useState('');
   const [sourceStationName, setSourceStationName] = useState('');
   const [destinationStationName, setDestinationStationName] = useState('');
   const [totalSeats, setTotalSeats] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
 
   const handleAddTrain = async () => {
     try {
@@ -29,25 +29,23 @@ const AddTrain = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
-        setError('');
+        toast.success(data.message);
         setTrainName('');
         setSourceStationName('');
         setDestinationStationName('');
         setTotalSeats('');
       } else {
-        setError(data.error);
-        setMessage('');
+        toast.error(data.error);
       }
     } catch (err) {
-      setError('An error occurred while adding the train.');
+      toast.error('An error occurred while adding the train.');
     }
   };
 
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
       <div className="container mx-auto py-8">
-        <div id="add-train" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
+        <div id="register" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
           <div className="py-4 px-8 text-white text-xl border-b border-grey-lighter">
             Add Train
           </div>
@@ -118,8 +116,7 @@ const AddTrain = () => {
                 </a>
               </p>
             </div>
-            {error && <p className="text-red-500 mt-4">{error}</p>}
-            {message && <p className="text-green-500 mt-4">{message}</p>}
+            <ToastContainer />
           </div>
         </div>
       </div>

@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../Auth/AuthContext';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const { setIsLoggedIn } = useContext(AuthContext);
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
+    password: ''
   });
   const [error, setError] = useState('');
 
@@ -16,28 +22,47 @@ const Login = () => {
     }));
   };
 
+  const handleLogin = async (formData) => {
+    try {
+      const response = await axios.post('https://irctc-lc7w.onrender.com/login', formData);
+
+      if (response.status === 200) {
+        // Store the token and user details in localStorage
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.payload));
+        setIsLoggedIn({
+          isAuth: true,
+          token: response.data.token,
+          isAdmin: response.data.payload.role === "admin" ? "admin" : false,
+          isUser: response.data.payload.role === "user" ? "user" : false,
+          userId: response.data.payload.id
+        });
+        // Show success toast
+        toast.success('Login successful');
+       navigate("/")
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+      setError('Error logging in. Please check your credentials and try again.');
+      // Show error toast
+      toast.error('Error logging in. Please check your credentials and try again.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const response = await axios.post('https://irctc-lc7w.onrender.com/login', formData);
-
-      if (response.status === 200) {
-        alert('Login successful');
-        // Store the token and user details in localStorage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.payload));
-        // Redirect to another page if needed
-      }
+      await handleLogin(formData);
     } catch (error) {
-      console.error('There was an error logging in!', error);
-      setError('Error logging in. Please check your credentials and try again.');
+      console.error('Error during login:', error);
     }
   };
 
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
+      <ToastContainer />
       <div className="container mx-auto py-8">
         <div id="register" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
           <div className="py-4 px-8 text-white text-xl border-b border-grey-lighter">

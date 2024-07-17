@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddStation = () => {
   const [stationName, setStationName] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
 
   const handleAddStation = async () => {
     try {
@@ -21,22 +21,20 @@ const AddStation = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
-        setError('');
+        toast.success(data.message);
         setStationName('');
       } else {
-        setError(data.error);
-        setMessage('');
+        toast.error(data.error);
       }
     } catch (err) {
-      setError('An error occurred while adding the station.');
+      toast.error('An error occurred while adding the station.');
     }
   };
 
   return (
     <div className="w-full bg-grey-lightest" style={{ paddingTop: '4rem' }}>
       <div className="container mx-auto py-8">
-        <div id="add-station" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
+        <div id="register" className="w-5/6 lg:w-1/2 mx-auto rounded-md shadow-2xl">
           <div className="py-4 px-8 text-white text-xl border-b border-grey-lighter">
             Add Station
           </div>
@@ -68,11 +66,10 @@ const AddStation = () => {
                 </a>
               </p>
             </div>
-            {error && <p className="text-red-500 mt-4">{error}</p>}
-            {message && <p className="text-green-500 mt-4">{message}</p>}
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
