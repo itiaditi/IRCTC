@@ -2,13 +2,6 @@ import React, { createContext, useContext, useState } from 'react'
 export const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
-// const userRes = {
-//     isAuth: false,
-//     token: "",
-//     isAdmin: "",
-//     isUser:"",
-//     userId:""
-//   };
 export function AuthContextProvider ({children}){
     const userRes = {
         isAuth: false,
@@ -19,8 +12,11 @@ export function AuthContextProvider ({children}){
       };
     const [isLoggedIn,setIsLoggedIn] = useState(userRes);
     console.log(isLoggedIn)
+    const logout = () => {
+      setIsLoggedIn(userRes);
+    };
   return (
-   <AuthContext.Provider value={{isLoggedIn,setIsLoggedIn}}>
+   <AuthContext.Provider value={{isLoggedIn,setIsLoggedIn,logout}}>
     {children}
    </AuthContext.Provider>
   )

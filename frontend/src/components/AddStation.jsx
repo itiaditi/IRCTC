@@ -8,7 +8,7 @@ const AddStation = () => {
   const handleAddStation = async () => {
     try {
       const response = await fetch(
-        'https://irctc-lc7w.onrender.com/station/addstation',
+        'https://irctc-lc7w.onrender.com/addstation',
         {
           method: 'POST',
           headers: {

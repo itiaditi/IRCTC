@@ -7,7 +7,7 @@ import CheckTrainAvailability from '../components/TrainAvailable';
 import BookedDetails from '../components/BookedDetails';
 import AddTrain from '../components/AddTrain';
 import AddStation from '../components/AddStation'; // Adjust the path if necessary
-import { PrivateRouter, PrivateRouterUser } from './PrivateRoute';
+import { PrivateRouterAdmin, PrivateRouterUser } from './PrivateRoute';
 
 const AllRoutes = () => {
   return (
@@ -19,8 +19,8 @@ const AllRoutes = () => {
 
       {/* Protected Routes for Admin */}
     
-        <Route path="/add-train" element={<PrivateRouter><AddTrain /></PrivateRouter>} />
-        <Route path="/add-station" element={<PrivateRouter><AddStation /></PrivateRouter>} />
+        <Route path="/add-train" element={<PrivateRouterAdmin><AddTrain /></PrivateRouterAdmin>} />
+        <Route path="/add-station" element={<PrivateRouterAdmin><AddStation /></PrivateRouterAdmin>} />
  
       {/* Protected Routes for User */}
       

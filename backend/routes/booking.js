@@ -56,16 +56,14 @@ bookingRouter.post('/book', authenticateToken, checkRole(["user"]), async (req, 
 
 // Get booking details by booking ID
 
-bookingRouter.get('/:bookingId', authenticateToken, checkRole(["user"]), async (req, res) => {
-  const { bookingId } = req.params;
-  const userId = req.user.id; // Retrieve user ID from authenticated request
+bookingRouter.get('/bookings', authenticateToken, checkRole(['user']), async (req, res) => {
+  const userId = req.user.id; // Retrieve user ID from the authenticated request
 
   try {
-    // Fetch booking details including related train and user information
-    const booking = await Booking.findOne({
-      where: { 
-        booking_id: bookingId,
-        user_id: userId // Ensure only bookings for the logged-in user are fetched
+    // Fetch all bookings for the logged-in user including related train information
+    const bookings = await Booking.findAll({
+      where: {
+        user_id: userId
       },
       include: [
         {
@@ -79,11 +77,11 @@ bookingRouter.get('/:bookingId', authenticateToken, checkRole(["user"]), async (
       ],
     });
 
-    if (!booking) {
-      return res.status(404).json({ error: 'Booking not found' });
+    if (!bookings.length) {
+      return res.status(404).json({ error: 'No bookings found' });
     }
 
-    res.status(200).json({ booking });
+    res.status(200).json({ bookings });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: 'Server error' });

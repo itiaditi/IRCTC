@@ -4,7 +4,7 @@ import logo from "../assets/train-logo.png"
 import { useAuth } from '../Auth/AuthContext';
 const Navbar = () => {
     const [open, setOpen] = useState(false);
-  const isAuth=useAuth();
+    const { isLoggedIn ,logout} = useAuth();
     return (
       <>
         <div className="relative shadow-lg">
@@ -43,6 +43,7 @@ const Navbar = () => {
               <nav className="hidden text-xl text-white md:flex space-x-10">
               
   
+              {isLoggedIn.isUser==='user'&&<>
                 <Link to="/train"
                   className="font-medium text-white hover:text-gray-900"
                 >
@@ -53,8 +54,10 @@ const Navbar = () => {
                   className="font-medium text-white hover:text-gray-900"
                 >
                   Booking Details
-                </Link>
+                </Link></>}
                 {/* admin nav */}
+                {isLoggedIn.isAdmin==='admin'&&
+                <>
                 <Link to="/add-train"
                   className="font-medium text-white hover:text-gray-900"
                 >
@@ -64,9 +67,10 @@ const Navbar = () => {
                   className="font-medium text-white hover:text-gray-900"
                 >
                  Add Station
-                </Link>
+                </Link></>}
               </nav>
               <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
+               {!isLoggedIn.isAuth?<>
                 <Link to="/login"
                   className="whitespace-nowrap text-xl text-white font-medium  hover:text-gray-900"
                 >
@@ -77,6 +81,8 @@ const Navbar = () => {
                 >
                   Sign up
                 </Link>
+               </>:<button onClick={logout} className="ml-8 whitespace-nowrap text-xl inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white  hover:text-black"
+               >Logout</button>}
               </div>
             </div>
           </div>

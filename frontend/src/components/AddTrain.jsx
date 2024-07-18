@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -7,11 +7,34 @@ const AddTrain = () => {
   const [sourceStationName, setSourceStationName] = useState('');
   const [destinationStationName, setDestinationStationName] = useState('');
   const [totalSeats, setTotalSeats] = useState('');
+  const [stations, setStations] = useState([]);
+
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await fetch('https://irctc-lc7w.onrender.com/', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // Adjust as needed
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setStations(data.stations);
+        } else {
+          toast.error(data.error);
+        }
+      } catch (err) {
+        toast.error('An error occurred while fetching station data.');
+      }
+    };
+
+    fetchStations();
+  }, []);
 
   const handleAddTrain = async () => {
     try {
       const response = await fetch(
-        'https://irctc-lc7w.onrender.com/train/train',
+        'https://irctc-lc7w.onrender.com/train',
         {
           method: 'POST',
           headers: {
@@ -67,27 +90,37 @@ const AddTrain = () => {
               <label className="block text-white text-sm font-bold mb-2" htmlFor="source_station_name">
                 Source Station Name
               </label>
-              <input
+              <select
                 className="appearance-none border rounded w-full py-2 px-3 text-grey-darker"
                 id="source_station_name"
-                type="text"
-                placeholder="Enter source station name"
                 value={sourceStationName}
                 onChange={(e) => setSourceStationName(e.target.value)}
-              />
+              >
+                <option value="">Select source station</option>
+                {stations.map((station) => (
+                  <option key={station.station_id} value={station.station_name}>
+                  {station.station_name}
+                </option>
+                ))}
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-white text-sm font-bold mb-2" htmlFor="destination_station_name">
                 Destination Station Name
               </label>
-              <input
+              <select
                 className="appearance-none border rounded w-full py-2 px-3 text-grey-darker"
                 id="destination_station_name"
-                type="text"
-                placeholder="Enter destination station name"
                 value={destinationStationName}
                 onChange={(e) => setDestinationStationName(e.target.value)}
-              />
+              >
+                <option value="">Select destination station</option>
+                {stations.map((station) => (
+                  <option key={station.station_id} value={station.station_name}>
+                  {station.station_name}
+                </option>
+                ))}
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-white text-sm font-bold mb-2" htmlFor="total_seats">
