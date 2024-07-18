@@ -71,7 +71,7 @@ const CheckTrainAvailability = () => {
         }
       });
 
-      toast.success(response.data.message);
+      toast.success("Successfully booked");
       setLoading(false);
       navigate('/booking-details');
     } catch (err) {
@@ -140,7 +140,7 @@ const CheckTrainAvailability = () => {
                 </a>
               </p>
             </div>
-            {trains.length > 0 && (
+            {trains.length > 0 ? (
               <div className="mt-8 text-black bg-white">
                 <h2 className="text-black text-lg mb-4">Available Trains:</h2>
                 <ul>
@@ -163,6 +163,12 @@ const CheckTrainAvailability = () => {
                   ))}
                 </ul>
               </div>
+            ) : (
+              !loading && (
+                <div className="mt-8 text-black bg-white">
+                  <h2 className="text-black text-lg mb-4">Train Is Not Available For This Route. Find Different Route</h2>
+                </div>
+              )
             )}
             {selectedTrain && (
               <div className="mt-8">
