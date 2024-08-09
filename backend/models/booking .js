@@ -24,13 +24,7 @@ const Booking = sequelize.define('Booking', {
       key: 'train_id'
     }
   },
-  seat_id: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Seat,
-      key: 'seat_id'
-    }
-  },
+  
   booking_status: {
     type: DataTypes.STRING,
     allowNull: false

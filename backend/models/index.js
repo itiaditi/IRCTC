@@ -11,7 +11,7 @@ Train.belongsTo(Station, { as: 'destinationStation', foreignKey: 'destination_st
 Seat.belongsTo(Train, { foreignKey: 'train_id' });
 Booking.belongsTo(User, { foreignKey: 'user_id' });
 Booking.belongsTo(Train, { foreignKey: 'train_id' });
-Booking.belongsTo(Seat, { foreignKey: 'seat_id' });
+// Booking.belongsTo(Seat, { foreignKey: 'seat_id' });
 
 async function syncDatabase() {
     try {

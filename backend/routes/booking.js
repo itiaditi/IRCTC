@@ -1,5 +1,5 @@
 const express = require('express');
-const { Train, Seat, Booking, User } = require('../models');
+const { Train, Booking, User } = require('../models');
 const { authenticateToken } = require('../middlewares/auth');
 const { checkRole } = require('../middlewares/access');
 
@@ -33,7 +33,6 @@ bookingRouter.post('/book', authenticateToken, checkRole(["user"]), async (req, 
       const booking = await Booking.create({
         train_id: train.train_id,
         user_id: userId, // Save user ID with the booking
-        seat_id: null, // If you don't have specific seat IDs to assign
         booking_status: 'confirmed'
       });
       bookings.push(booking);
